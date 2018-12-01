@@ -1,7 +1,7 @@
 package org.mongo.Entity;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+//import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -15,8 +15,8 @@ public class User implements Serializable {
     private String username;
     private String name;
     private String email;
-    @org.springframework.data.annotation.Transient
-    @JsonIgnore
+//    @org.springframework.data.annotation.Transient
+//    @JsonIgnore
     private String password;
 
     public String getUsername() {
