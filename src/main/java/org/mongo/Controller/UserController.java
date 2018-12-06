@@ -11,13 +11,16 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.web.bind.annotation.*;
 
 import javax.mail.internet.MimeMessage;
+import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.LinkedList;
 
 @RestController
 @RequestMapping(value = "/user")
+
 public class UserController {
 //    Logger logger = LoggerFactory.getLogger(UserController.class);
+
 
     @Autowired
     public UserRepository userRepository;
@@ -43,7 +46,7 @@ public class UserController {
                     response.setError("1");
                     return response;
                 }
-        this.sendEmail(user.getEmail());
+//        this.sendEmail(user.getEmail());
         response.setMessage("Request Completed Successfully");
         response.setError("0");
         response.setData(userRepository.save(user));
@@ -107,19 +110,19 @@ public class UserController {
         return response;
     }
 
-    private void sendEmail( String email) throws Exception{
-
-        MimeMessage message = sender.createMimeMessage();
-
-        MimeMessageHelper helper = new MimeMessageHelper(message);
-
-        helper.setTo(email);
-
-        helper.setText("How are you?");
-
-        helper.setSubject("Hi");
-        sender.send(message);
-    }
+//    private void sendEmail( String email) throws Exception{
+//
+//        MimeMessage message = sender.createMimeMessage();
+//
+//        MimeMessageHelper helper = new MimeMessageHelper(message);
+//
+//        helper.setTo(email);
+//
+//        helper.setText("How are you?");
+//
+//        helper.setSubject("Hi");
+//        sender.send(message);
+//    }
 
 
 }
