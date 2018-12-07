@@ -25,10 +25,6 @@ public class UserController {
     @Autowired
     public UserRepository userRepository;
 
-    @Autowired
-    private JavaMailSender sender;
-
-
     @GetMapping(value = "/all")
     public Response allUser(){
         Response response = new Response();

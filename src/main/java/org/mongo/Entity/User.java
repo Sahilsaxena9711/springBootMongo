@@ -15,8 +15,6 @@ public class User implements Serializable {
     private String username;
     private String name;
     private String email;
-//    @org.springframework.data.annotation.Transient
-//    @JsonIgnore
     private String password;
 
     public String getUsername() {
