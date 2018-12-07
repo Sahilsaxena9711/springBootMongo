@@ -1,0 +1,109 @@
+package org.mongo.Controller;
+
+import org.mongo.Entity.Attendance;
+import org.mongo.Entity.Response;
+import org.mongo.Repository.AttendanceRepository;
+import org.mongo.Repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping(value = "/attendance")
+public class AttendanceController {
+
+    Logger logger = LoggerFactory.getLogger(UserController.class);
+
+    @Autowired
+    public AttendanceRepository attendanceRepository;
+
+    @Autowired
+    public UserRepository userRepository;
+
+    @GetMapping(value = "/all")
+    public Response getAllAttendance(){
+        Response response = new Response();
+        response.setData(attendanceRepository.findAll());
+        response.setMessage("Request Completed Successfully");
+        response.setError("0");
+        return response;
+    }
+
+    @PostMapping(value = "/add/{key}")
+    public Response addAttendance(@RequestBody final Attendance attendance, @PathVariable final String key){
+        Response response = new Response();
+        Attendance attendance1 = attendanceRepository.getAttendanceByDateAndUsername(attendance.getDate(), attendance.getUsername());
+//        logger.info(attendance1.toString());
+        if(attendance1 == null) {
+
+            Attendance newAttendance = new Attendance();
+            newAttendance.setDate(attendance.getDate());
+            newAttendance.setEntryTime(key);
+            newAttendance.setUsername(attendance.getUsername());
+            response.setData(attendanceRepository.save(newAttendance));
+            response.setMessage("Request Completed Successfully");
+            response.setError("0");
+            return response;
+        }else if(attendance1.getUsername().equals(attendance.getUsername())) {
+
+            //            logger.info("in else if");
+            attendance1.setExitTime(key);
+            response.setData(attendanceRepository.save(attendance1));
+            response.setError("0");
+            response.setMessage("Request Completed Successfully");
+            return response;
+        }
+        response.setError("1");
+        response.setMessage("Error Adding Attendance");
+        return response;
+    }
+
+    @GetMapping(value = "/get/date/{date}")
+    public Response getAttendanceByDate(@PathVariable final String date){
+        Response response = new Response();
+        Object attendance = attendanceRepository.getAttendanceByDate(date);
+
+        if(attendance == null){
+            response.setError("1");
+            response.setMessage("No data found for date "+date);
+            return response;
+        }
+        response.setData(attendance);
+        response.setError("0");
+        response.setMessage("Request Completed Successfully");
+        return response;
+    }
+
+    @GetMapping(value = "/get/username/{username}")
+    public Response getAttendanceByUsername(@PathVariable final String username){
+        Response response = new Response();
+        Object attendance = attendanceRepository.getByUsername(username);
+
+        if(attendance == null){
+            response.setError("1");
+            response.setMessage("No data found for "+username);
+            return response;
+        }
+        response.setData(attendance);
+        response.setError("0");
+        response.setMessage("Request Completed Successfully");
+        return response;
+    }
+
+    @GetMapping(value = "/get")
+    public Response getAttendanceByUsernameDate(@RequestParam final String username, @RequestParam() final String date){
+        Response response = new Response();
+        Attendance attendance = attendanceRepository.getAttendanceByDateAndUsername(date, username);
+        if (attendance == null){
+            response.setError("1");
+            response.setMessage("No data found for "+username+" on "+date);
+            return response;
+        }
+        response.setData(attendance);
+        response.setError("0");
+        response.setMessage("Request Successfully Completed");
+        return response;
+    }
+
+}
