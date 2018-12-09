@@ -2,12 +2,19 @@ package org.mongo.Controller;
 
 import org.mongo.Entity.Attendance;
 import org.mongo.Entity.Response;
+import org.mongo.Entity.User;
 import org.mongo.Repository.AttendanceRepository;
 import org.mongo.Repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 @RestController
 @RequestMapping(value = "/attendance")
@@ -33,30 +40,58 @@ public class AttendanceController {
     @PostMapping(value = "/add/{key}")
     public Response addAttendance(@RequestBody final Attendance attendance, @PathVariable final String key){
         Response response = new Response();
-        Attendance attendance1 = attendanceRepository.getAttendanceByDateAndUsername(attendance.getDate(), attendance.getUsername());
+
+        User user = userRepository.getUserByUsername(attendance.getUsername());
+
+        if(user != null) {
+            Attendance attendance1 = attendanceRepository.getAttendanceByDateAndUsername(attendance.getDate(), attendance.getUsername());
 //        logger.info(attendance1.toString());
-        if(attendance1 == null) {
+            if (attendance1 == null) {
+                Attendance newAttendance = new Attendance();
+                newAttendance.setDate(attendance.getDate());
+                newAttendance.setEntryTime(key);
+                newAttendance.setUsername(attendance.getUsername());
+                response.setData(attendanceRepository.save(newAttendance));
+                response.setMessage("Request Completed Successfully");
+                response.setError("0");
+                return response;
+            } else if (attendance1.getUsername().equals(attendance.getUsername())) {
 
-            Attendance newAttendance = new Attendance();
-            newAttendance.setDate(attendance.getDate());
-            newAttendance.setEntryTime(key);
-            newAttendance.setUsername(attendance.getUsername());
-            response.setData(attendanceRepository.save(newAttendance));
-            response.setMessage("Request Completed Successfully");
-            response.setError("0");
-            return response;
-        }else if(attendance1.getUsername().equals(attendance.getUsername())) {
+                attendance1.setExitTime(key);
 
-            //            logger.info("in else if");
-            attendance1.setExitTime(key);
-            response.setData(attendanceRepository.save(attendance1));
-            response.setError("0");
-            response.setMessage("Request Completed Successfully");
+                DateFormat entry = new SimpleDateFormat("hh:mm:ss");
+                DateFormat exit = new SimpleDateFormat("hh:mm:ss");
+
+                try {
+                    Date exitt = exit.parse(key);
+                    Date entryt = entry.parse(attendance1.getEntryTime());
+                    logger.info(String.valueOf(exitt.getTime()));
+                    logger.info(String.valueOf(entryt.getTime()));
+                    long diff = (exitt.getTime() - entryt.getTime());
+                    String hms = String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(diff),
+                            TimeUnit.MILLISECONDS.toMinutes(diff) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(diff)),
+                            TimeUnit.MILLISECONDS.toSeconds(diff) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(diff)));
+                    logger.info(hms);
+                    attendance1.setTotaltime(hms);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                    logger.info(e.toString());
+                    logger.info("error occurs sss sss s");
+                }
+
+
+                response.setData(attendanceRepository.save(attendance1));
+                response.setError("0");
+                response.setMessage("Request Completed Successfully");
+                return response;
+            }
+            response.setError("1");
+            response.setMessage("Error Adding Attendance");
             return response;
         }
         response.setError("1");
-        response.setMessage("Error Adding Attendance");
-        return response;
+        response.setMessage("User with username "+attendance.getUsername()+" doesn't exist");
+        return  response;
     }
 
     @GetMapping(value = "/get/date/{date}")
