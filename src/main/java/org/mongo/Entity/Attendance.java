@@ -15,6 +15,15 @@ public class Attendance {
     private String entryTime;
     private String exitTime;
     private String date;
+    private String totaltime;
+
+    public String getTotaltime() {
+        return totaltime;
+    }
+
+    public void setTotaltime(String totaltime) {
+        this.totaltime = totaltime;
+    }
 
     public String getId() {
         return id;
