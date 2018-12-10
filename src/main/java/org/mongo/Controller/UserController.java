@@ -93,6 +93,7 @@ public class UserController {
             if(users.getPassword().equals(user.getPassword())){
                 HashMap<String, String> hm = new HashMap<>();
                 hm.put("token","");
+                hm.put("username", user.getUsername());
                 response.setError("0");
                 response.setData(hm);
                 response.setMessage("Login Successful");
