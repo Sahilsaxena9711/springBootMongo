@@ -16,6 +16,24 @@ public class Attendance {
     private String exitTime;
     private String date;
     private String totaltime;
+    private String month;
+    private String overtime;
+
+    public String getOvertime() {
+        return overtime;
+    }
+
+    public void setOvertime(String overtime) {
+        this.overtime = overtime;
+    }
+
+    public String getMonth() {
+        return month;
+    }
+
+    public void setMonth(String month) {
+        this.month = month;
+    }
 
     public String getTotaltime() {
         return totaltime;
