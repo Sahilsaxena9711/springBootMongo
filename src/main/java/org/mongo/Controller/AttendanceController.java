@@ -14,6 +14,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @RestController
@@ -152,10 +153,32 @@ public class AttendanceController {
     @GetMapping(value = "/get/monthly")
     public Response getMonthlyAttendance(@RequestParam final String username, @RequestParam final String month){
         Response response = new Response();
+        User user = userRepository.getUserByUsername(username);
+        if (user != null){
         Object attendance = attendanceRepository.getAttendanceByMonthAndUsername(month, username);
-        if (attendance == null){
+        if (((List) attendance).isEmpty()){
             response.setError("1");
             response.setMessage("No data found for "+username+" for "+month);
+            return response;
+        }
+        response.setData(attendance);
+        response.setError("0");
+        response.setMessage("Request Successfully Completed");
+        return response;
+        }
+        response.setError("1");
+        response.setMessage("User with username "+username+" doesn't exist");
+        return response;
+
+    }
+
+    @GetMapping(value = "/get/all/monthly")
+    public Response getAllMonthlyAttendance(@RequestParam final String month){
+        Response response = new Response();
+        Object attendance = attendanceRepository.getAllAttendanceByMonth(month);
+        if (attendance == null){
+            response.setError("1");
+            response.setMessage("No data found for "+month);
             return response;
         }
         response.setData(attendance);
