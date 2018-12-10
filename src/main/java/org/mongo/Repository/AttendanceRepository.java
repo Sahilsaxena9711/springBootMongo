@@ -12,4 +12,6 @@ public interface AttendanceRepository extends MongoRepository<Attendance,Integer
     Attendance getAttendanceByDateAndUsername(String date, String username);
 
     List<Attendance> getByUsername(String username);
+
+    List<Attendance> getAttendanceByMonthAndUsername(String month, String username);
 }

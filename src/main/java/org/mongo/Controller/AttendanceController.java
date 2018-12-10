@@ -50,6 +50,7 @@ public class AttendanceController {
                 Attendance newAttendance = new Attendance();
                 newAttendance.setDate(attendance.getDate());
                 newAttendance.setEntryTime(key);
+                newAttendance.setMonth(attendance.getMonth());
                 newAttendance.setUsername(attendance.getUsername());
                 response.setData(attendanceRepository.save(newAttendance));
                 response.setMessage("Request Completed Successfully");
@@ -68,6 +69,13 @@ public class AttendanceController {
                     logger.info(String.valueOf(exitt.getTime()));
                     logger.info(String.valueOf(entryt.getTime()));
                     long diff = (exitt.getTime() - entryt.getTime());
+                    if(diff > 32400000){
+                        long over = diff - 32400000;
+                        String overt = String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(over),
+                                TimeUnit.MILLISECONDS.toMinutes(over) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(over)),
+                                TimeUnit.MILLISECONDS.toSeconds(over) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(over)));
+                        attendance1.setOvertime(overt);
+                    }
                     String hms = String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(diff),
                             TimeUnit.MILLISECONDS.toMinutes(diff) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(diff)),
                             TimeUnit.MILLISECONDS.toSeconds(diff) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(diff)));
@@ -141,4 +149,18 @@ public class AttendanceController {
         return response;
     }
 
+    @GetMapping(value = "/get/monthly")
+    public Response getMonthlyAttendance(@RequestParam final String username, @RequestParam final String month){
+        Response response = new Response();
+        Object attendance = attendanceRepository.getAttendanceByMonthAndUsername(month, username);
+        if (attendance == null){
+            response.setError("1");
+            response.setMessage("No data found for "+username+" for "+month);
+            return response;
+        }
+        response.setData(attendance);
+        response.setError("0");
+        response.setMessage("Request Successfully Completed");
+        return response;
+    }
 }
