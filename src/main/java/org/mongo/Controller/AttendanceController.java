@@ -46,13 +46,25 @@ public class AttendanceController {
 
         if(user != null) {
             Attendance attendance1 = attendanceRepository.getAttendanceByDateAndUsername(attendance.getDate(), attendance.getUsername());
-//        logger.info(attendance1.toString());
             if (attendance1 == null) {
                 Attendance newAttendance = new Attendance();
                 newAttendance.setDate(attendance.getDate());
                 newAttendance.setEntryTime(key);
                 newAttendance.setMonth(attendance.getMonth());
                 newAttendance.setUsername(attendance.getUsername());
+                    String[] tokens = key.split(":");
+                    int secondsToMs = Integer.parseInt(tokens[2]) * 1000;
+                    int minutesToMs = Integer.parseInt(tokens[1]) * 60000;
+                    int hoursToMs = Integer.parseInt(tokens[0]) * 3600000;
+                    long total = secondsToMs + minutesToMs + hoursToMs;
+                    if(total > 37800000){
+                        long letetime = total - 37800000;
+                        String latet = String.format("%02d:%02d:%02d",
+                                TimeUnit.MILLISECONDS.toHours(letetime),
+                                TimeUnit.MILLISECONDS.toMinutes(letetime) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(letetime)),
+                                TimeUnit.MILLISECONDS.toSeconds(letetime) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(letetime)));
+                        newAttendance.setLateswipetime(latet);
+                    }
                 response.setData(attendanceRepository.save(newAttendance));
                 response.setMessage("Request Completed Successfully");
                 response.setError("0");
@@ -67,8 +79,6 @@ public class AttendanceController {
                 try {
                     Date exitt = exit.parse(key);
                     Date entryt = entry.parse(attendance1.getEntryTime());
-                    logger.info(String.valueOf(exitt.getTime()));
-                    logger.info(String.valueOf(entryt.getTime()));
                     long diff = (exitt.getTime() - entryt.getTime());
                     if(diff > 32400000){
                         long over = diff - 32400000;
@@ -80,15 +90,10 @@ public class AttendanceController {
                     String hms = String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(diff),
                             TimeUnit.MILLISECONDS.toMinutes(diff) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(diff)),
                             TimeUnit.MILLISECONDS.toSeconds(diff) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(diff)));
-                    logger.info(hms);
                     attendance1.setTotaltime(hms);
                 } catch (ParseException e) {
                     e.printStackTrace();
-                    logger.info(e.toString());
-                    logger.info("error occurs sss sss s");
                 }
-
-
                 response.setData(attendanceRepository.save(attendance1));
                 response.setError("0");
                 response.setMessage("Request Completed Successfully");
