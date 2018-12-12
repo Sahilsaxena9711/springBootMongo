@@ -18,6 +18,15 @@ public class Attendance {
     private String totaltime;
     private String month;
     private String overtime;
+    private String lateswipetime;
+
+    public String getLateswipetime() {
+        return lateswipetime;
+    }
+
+    public void setLateswipetime(String lateswipetime) {
+        this.lateswipetime = lateswipetime;
+    }
 
     public String getOvertime() {
         return overtime;
