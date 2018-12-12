@@ -86,6 +86,12 @@ public class AttendanceController {
                                 TimeUnit.MILLISECONDS.toMinutes(over) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(over)),
                                 TimeUnit.MILLISECONDS.toSeconds(over) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(over)));
                         attendance1.setOvertime(overt);
+                    }else if(diff < 32400000){
+                        long lesst = 32400000 - diff;
+                        String less = String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(lesst),
+                                TimeUnit.MILLISECONDS.toMinutes(lesst) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(lesst)),
+                                TimeUnit.MILLISECONDS.toSeconds(lesst) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(lesst)));
+                        attendance1.setLesstime(less);
                     }
                     String hms = String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(diff),
                             TimeUnit.MILLISECONDS.toMinutes(diff) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(diff)),
