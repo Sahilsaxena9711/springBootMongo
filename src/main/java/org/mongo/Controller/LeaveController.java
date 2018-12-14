@@ -93,6 +93,7 @@ public class LeaveController {
             response.setData(myleaves);
             response.setError("0");
             response.setMessage("Request Completed Successfully!");
+            return response;
         }
         response.setError("1");
         response.setMessage("User with username "+username+" doesn't exist!");
@@ -108,6 +109,7 @@ public class LeaveController {
             response.setData(myleaves);
             response.setError("0");
             response.setMessage("Request Completed Successfully!");
+            return response;
         }
         response.setError("1");
         response.setMessage("User with username "+username+" doesn't exist!");
