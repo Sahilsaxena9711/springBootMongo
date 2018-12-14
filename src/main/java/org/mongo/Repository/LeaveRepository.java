@@ -14,4 +14,6 @@ public interface LeaveRepository extends MongoRepository<Leave,Integer> {
     Leave getLeaveByUsernameAndDate(String username, String date);
 
     List<Leave> getLeaveByUsername(String username);
+
+    List<Leave> getLeaveByUsernameAndMonth(String username, String month);
 }
